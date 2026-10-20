@@ -180,7 +180,7 @@ console.log('captured component type ->', typeof component, component && compone
 if (typeof notesComponent !== 'function') { console.error('FAIL: the sidebar-foot notes action was not registered'); process.exit(1); }
 if (typeof pageComponent !== 'function') { console.error('FAIL: the notes main panel was not registered'); process.exit(1); }
 
-const dict = { 'focus.title': '专注锁', 'focus.report': '把自检发给我', 'focus.lockSession': '锁定本会话', 'focus.unlockSession': '立即解锁', 'focus.refresh': '刷新状态', 'action.groupAsk': '提问', 'action.groupTurn': '本轮', 'action.retry': '重试本轮', 'action.branch': '在此分支', 'action.resend': '编辑重发', 'action.quote': '引用回复', 'action.newMode': '选模式新建',
+const dict = { 'focus.title': '专注锁', 'focus.report': '把自检发给我', 'focus.lockSession': '锁定本会话', 'focus.unlockSession': '立即解锁', 'focus.refresh': '刷新状态', 'action.retry': '重试本轮', 'action.branch': '在此分支', 'action.resend': '编辑重发', 'action.quote': '引用回复', 'action.newMode': '选模式新建',
   'notes.title': '笔记', 'notes.placeholder': '随手记一条', 'notes.empty': '还没有笔记', 'notes.copied': '已复制',
   'notes.back': '返回对话', 'notes.pageHint': '随手记的命令和提醒',
   'notes.search': '搜索笔记…', 'notes.count': '{shown} / {total} 条', 'notes.noMatch': '没有匹配的笔记',

@@ -52,7 +52,7 @@ const exportsObj = loaded.factory(mockRequire);
 
 const t = (k, params) => {
   let value = ({
-    'action.groupAsk': '提问', 'action.groupTurn': '本轮', 'action.retry': '重试本轮', 'action.branch': '在此分支', 'action.resend': '编辑重发',
+    'action.retry': '重试本轮', 'action.branch': '在此分支', 'action.resend': '编辑重发',
     'action.quote': '引用回复', 'action.newMode': '选模式新建',
     'feature.nameTurnActions': '会话操作', 'feature.disabled': '「{name}」已移除'
   }[k] ?? k);
