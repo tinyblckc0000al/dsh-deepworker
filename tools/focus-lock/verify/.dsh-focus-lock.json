@@ -1,0 +1,14 @@
+{
+  "enabled": true,
+  "kind": "session",
+  "targetId": "s",
+  "lockedAtMs": 1791710076684,
+  "untilMs": 1791710376684,
+  "cooldownMs": 0,
+  "unlocks": [
+    {
+      "atMs": 1791710076651,
+      "wentTo": "session:other"
+    }
+  ]
+}

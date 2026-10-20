@@ -1,0 +1,23 @@
+{
+  "name": "dsh-ha-core",
+  "description": "history-actions 的共享层：提示气泡/系统通知、i18n、Markdown、设置读写、右键菜单桥、对话 DOM 助手",
+  "version": "0.1.0",
+  "type": "module",
+  "main": "lib/index.js",
+  "exports": {
+    ".": { "default": "./lib/index.js" },
+    "./client": { "default": "./lib/client.js" },
+    "./package.json": "./package.json"
+  },
+  "dsh": {
+    "client": {
+      "platform": "web",
+      "inject": [],
+      "external": []
+    },
+    "bundle": { "patch": "./cordis.patch.yml" }
+  },
+  "peerDependencies": { "@deepseek-ai/cordis": "~4.0.4" },
+  "files": ["lib/index.js", "lib/client.js", "cordis.patch.yml"],
+  "license": "MIT"
+}

@@ -1,0 +1,108 @@
+name: Metrics snapshot
+
+on:
+  schedule:
+    - cron: "17 2 * * *"
+  workflow_dispatch:
+
+permissions:
+  contents: write
+
+concurrency:
+  group: metrics-snapshot
+  cancel-in-progress: false
+
+jobs:
+  snapshot:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Collect public metrics
+        env:
+          GH_TOKEN: ${{ secrets.METRICS_TOKEN || secrets.GITHUB_TOKEN }}
+        run: |
+          set -euo pipefail
+          REPO="${{ github.repository }}"
+          DATE="$(date -u -d 'yesterday' +%F)"
+          OUT="metrics/${DATE}.json"
+          TMP="$(mktemp -d)"
+          trap 'rm -rf "$TMP"' EXIT
+          mkdir -p metrics
+
+          api() {
+            local path="$1" out="$2"
+            curl -fsS -H "Authorization: Bearer ${GH_TOKEN}" \
+              -H "Accept: application/vnd.github+json" \
+              "https://api.github.com/repos/${REPO}${path}" -o "${TMP}/${out}"
+          }
+
+          # Traffic needs a token with repository Administration read. GITHUB_TOKEN
+          # returns 403; keep the rest of the snapshot usable and record the error.
+          soft_api() {
+            local path="$1" out="$2"
+            if ! curl -fsS -H "Authorization: Bearer ${GH_TOKEN}" \
+              -H "Accept: application/vnd.github+json" \
+              "https://api.github.com/repos/${REPO}${path}" -o "${TMP}/${out}"; then
+              printf '{"error":"traffic-unavailable","status":403}\n' > "${TMP}/${out}"
+            fi
+          }
+
+          soft_api "/traffic/clones" clones.json
+          soft_api "/traffic/views" views.json
+          soft_api "/traffic/popular/referrers" referrers.json
+          soft_api "/traffic/popular/paths" paths.json
+          api "/releases" releases.json
+          api "" repo.json
+
+          curl -fsS "https://api.npmjs.org/downloads/point/${DATE}:${DATE}/dsh-deepworker" -o "${TMP}/npm-day.json"
+          curl -fsS "https://api.npmjs.org/downloads/point/last-week/dsh-deepworker" -o "${TMP}/npm-week.json"
+
+          jq -n \
+            --arg date "$DATE" \
+            --arg repo "$REPO" \
+            --slurpfile clones "${TMP}/clones.json" \
+            --slurpfile views "${TMP}/views.json" \
+            --slurpfile referrers "${TMP}/referrers.json" \
+            --slurpfile paths "${TMP}/paths.json" \
+            --slurpfile releases "${TMP}/releases.json" \
+            --slurpfile repoInfo "${TMP}/repo.json" \
+            --slurpfile npmDay "${TMP}/npm-day.json" \
+            --slurpfile npmWeek "${TMP}/npm-week.json" \
+            '{
+              date: $date,
+              repo: $repo,
+              clones: $clones[0],
+              views: $views[0],
+              referrers: $referrers[0],
+              paths: $paths[0],
+              repo_stats: {
+                stars: $repoInfo[0].stargazers_count,
+                forks: $repoInfo[0].forks_count,
+                open_issues: $repoInfo[0].open_issues_count,
+                subscribers: $repoInfo[0].subscribers_count
+              },
+              releases: ($releases[0] | map({
+                tag: .tag_name,
+                name: .name,
+                published_at: .published_at,
+                assets: (.assets | map({name, download_count}))
+              })),
+              npm: {
+                day: $npmDay[0],
+                last_week: $npmWeek[0]
+              }
+            }' > "$OUT"
+
+      - name: Commit snapshot
+        run: |
+          set -euo pipefail
+          git config user.name "github-actions[bot]"
+          git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
+          git add metrics
+          if git diff --cached --quiet; then
+            echo "No metrics changes"
+            exit 0
+          fi
+          git commit -m "chore(metrics): snapshot $(date -u -d 'yesterday' +%F)"
+          git push

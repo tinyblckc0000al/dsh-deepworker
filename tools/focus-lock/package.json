@@ -1,0 +1,27 @@
+{
+  "name": "dsh-focus-lock",
+  "description": "专注锁：锁定一个会话或工作区，非目标会话里拒绝会改变状态的工具调用",
+  "version": "0.1.0",
+  "type": "module",
+  "main": "lib/index.js",
+  "exports": {
+    ".": {
+      "default": "./lib/index.js"
+    },
+    "./package.json": "./package.json"
+  },
+  "peerDependencies": {
+    "@deepseek-ai/cordis": "~4.0.4"
+  },
+  "files": [
+    "lib/index.js",
+    "lib/focus-lock-cli.mjs",
+    "cordis.patch.yml"
+  ],
+  "license": "MIT",
+  "dsh": {
+    "bundle": {
+      "patch": "./cordis.patch.yml"
+    }
+  }
+}

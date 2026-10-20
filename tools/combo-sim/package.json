@@ -1,0 +1,15 @@
+{
+  "name": "dsh-combo-sim",
+  "version": "0.1.0",
+  "private": true,
+  "type": "module",
+  "description": "Read-only local simulator for DSH client-plugin combo script arrival semantics; diagnoses why a combo reports `N entry did not activate`.",
+  "scripts": {
+    "verify": "node verify/run_all.mjs",
+    "verify:combo": "node verify/verify_combo.mjs",
+    "verify:scope": "node verify/verify_scope_refs.mjs",
+    "verify:replay": "node verify/reproduce_combo_exception.mjs",
+    "verify:reconcile": "node verify/reconcile_code_cache.mjs"
+  },
+  "engines": { "node": ">=20" }
+}

@@ -1,0 +1,19 @@
+# dependencies: installed HERE now (devDependencies: react/react-dom for the verify suites).
+# 2026-10-17: 不再借用工作区「project」的 node_modules —— 插件自带一份，彼此完全独立。
+node_modules/
+
+# 本地临时/备份产物 —— 绝不进仓库
+# .pending-client.js 是「改 lib/client.js」的唯一允许通道：完整内容先写在这里再 mv
+.pending-client.js
+*.pending
+.pending-*
+*.bak
+*.bak-*
+.candidate-*
+
+# macOS
+.DS_Store
+
+# 套件写的临时报告
+verify/*.out.txt
+verify/*.log

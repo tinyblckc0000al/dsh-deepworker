@@ -1,0 +1,85 @@
+{
+  "name": "dsh-deepworker",
+  "description": "DeepWorker —— 把 DSH 会话变成可操作、可留存、可锁定的工作台：轮次操作、引用出处、笔记、摘要、查找、专注锁、多工作区命令按钮。",
+  "version": "0.1.3",
+  "type": "module",
+  "engines": {
+    "dsh": ">=0.2.1-rc.1 <0.3.0"
+  },
+  "main": "lib/index.js",
+  "exports": {
+    ".": {
+      "default": "./lib/index.js"
+    },
+    "./client": {
+      "default": "./lib/client.js"
+    },
+    "./package.json": "./package.json",
+    "./cordis.patch.yml": "./cordis.patch.yml"
+  },
+  "dsh": {
+    "client": {
+      "inject": [
+        "@deepseek-ai/dsh-api-remotes",
+        "@deepseek-ai/dsh-api-session-controller",
+        "@deepseek-ai/dsh-client-locale",
+        "@deepseek-ai/dsh-client-shortcuts",
+        "@deepseek-ai/dsh-client-ui-layout",
+        "@deepseek-ai/dsh-client-ui-conversation",
+        "@deepseek-ai/dsh-client-ui-renderer",
+        "@deepseek-ai/dsh-client-ui-workspace",
+        "@deepseek-ai/dsh-api-terminal-controller"
+      ],
+      "platform": "web"
+    },
+    "bundle": {
+      "patch": "./cordis.patch.yml"
+    }
+  },
+  "peerDependencies": {
+    "@deepseek-ai/cordis": "~4.0.4"
+  },
+  "files": [
+    "lib/index.js",
+    "lib/client.js",
+    "cordis.patch.yml",
+    "README.md",
+    "README.en.md",
+    "CHANGELOG.md",
+    "docs/command-buttons-config.md"
+  ],
+  "license": "MIT",
+  "author": "pandamustard",
+  "keywords": [
+    "dsh",
+    "deepseek-harness",
+    "cordis",
+    "cordis-plugin",
+    "client-plugin",
+    "session-history",
+    "notes",
+    "markdown",
+    "find-in-conversation",
+    "focus-lock",
+    "deepworker",
+    "command-buttons"
+  ],
+  "devDependencies": {
+    "jsdom": "^30.1.3",
+    "react": "19.2.6",
+    "react-dom": "19.2.6"
+  },
+  "peerDependenciesMeta": {
+    "@deepseek-ai/cordis": {
+      "optional": true
+    }
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/tinyblckc0000al/dsh-deepworker.git"
+  },
+  "homepage": "https://github.com/tinyblckc0000al/dsh-deepworker#readme",
+  "bugs": {
+    "url": "https://github.com/tinyblckc0000al/dsh-deepworker/issues"
+  }
+}

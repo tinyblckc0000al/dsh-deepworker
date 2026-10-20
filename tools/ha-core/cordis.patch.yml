@@ -1,0 +1,3 @@
+- insert:
+    - id: ha-core
+      name: 'dsh-ha-core'
