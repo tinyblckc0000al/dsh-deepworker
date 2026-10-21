@@ -149,9 +149,9 @@ const savedGetSelection = sandbox.window.getSelection;
 sandbox.window.getSelection = () => ({ toString: () => '选中的一段' });
 fireOn(assistantEl);
 if (body.children.length !== 1) fail('assistant selection menu not shown');
-if (body.children[0].children.length !== 2) fail('assistant menu should offer the quote item and 「存为笔记」, got ' + body.children[0].children.length);
-if (body.children[0].children[1].textContent !== '存为笔记') fail('assistant menu is missing the save-note item: ' + body.children[0].children[1].textContent);
-body.children[0].children[0].onclick();
+if (body.children[0].children.length !== 3) fail('assistant menu should offer quick wiki + quote + note, got ' + body.children[0].children.length);
+if (body.children[0].children[2].textContent !== '存为笔记') fail('assistant menu is missing the save-note item: ' + body.children[0].children[2].textContent);
+body.children[0].children[1].onclick();
 console.log('assistant selection quote ->', JSON.stringify(draftCalls[0]));
 if (!draftCalls[0] || draftCalls[0].indexOf('▍ 选中的一段') === -1) fail('selection quote missing its bar: ' + JSON.stringify(draftCalls[0]));
 // It must also carry the provenance marker, and a leading newline so it never glues
@@ -166,7 +166,7 @@ if (requests.length !== 0) fail('assistant selection must not publish a turn req
 // 同一个菜单里的「存为笔记」必须真的落盘（不是只画了一颗按钮）。
 {
   const before = JSON.parse(localStorage.getItem('dsh.deepworker.notes') || '[]');
-  body.children[0].children[1].onclick();
+  body.children[0].children[2].onclick();
   const after = JSON.parse(localStorage.getItem('dsh.deepworker.notes') || '[]');
   if (after.length !== before.length + 1) fail('assistant selection save-note did not persist exactly one note');
   else if (after[after.length - 1].text !== '选中的一段') fail('save-note stored the wrong text: ' + JSON.stringify(after[after.length - 1]));
@@ -328,9 +328,9 @@ console.log('ungrouped bucket -> no menu (ok)');
   fireOn(node);
   if (body.children.length === 0) fail('the selection context menu did not open');
   const menu = body.children[0];
-  if (menu.children.length !== 2) fail('an assistant selection offers quote + 「存为笔记」, got ' + menu.children.length);
-  if (menu.children[1].textContent !== '存为笔记') fail('the second assistant-selection item is not 「存为笔记」: ' + menu.children[1].textContent);
-  menu.children[0].onclick();
+  if (menu.children.length !== 3) fail('an assistant selection offers quote + note + quick wiki, got ' + menu.children.length);
+  if (menu.children[2].textContent !== '存为笔记') fail('the third assistant-selection item is not 「存为笔记」: ' + menu.children[2].textContent);
+  menu.children[1].onclick();
   const written = draftCalls.slice(before).join(' | ');
   if (written === '') fail('the quote item wrote nothing — test setup is wrong');
   if (written.indexOf('引自本轮第 2 轮') === -1) fail('the quote must name the turn: ' + JSON.stringify(written));

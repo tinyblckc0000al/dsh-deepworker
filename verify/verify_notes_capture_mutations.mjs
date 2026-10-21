@@ -80,7 +80,7 @@ mutation({
 mutation({
   name: '④ 引用关掉时选区直接 return（笔记跟着消失）⇒ 红',
   mutate: (s) => mustReplace(s,
-    '        if (!quoteOn) {\n          if (noteItem !== null) openMenu(ev, [noteItem]);\n          return;\n        }\n',
+    '        if (!quoteOn) {\n          if (fallbackItems.length > 0) openMenu(ev, fallbackItems);\n          return;\n        }\n',
     '        if (!quoteOn) return;\n',
     'quote/notes independence'),
   expect: /when quote is off the selection path still returns early/,

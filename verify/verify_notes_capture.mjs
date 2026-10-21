@@ -95,7 +95,7 @@ mustAtLeast(/saveSelectionNote\(/g, 3, 'saveSelectionNote is defined and called 
 
 /* 选区路径：引用关掉时笔记必须仍然出现（这是两个独立开关）。 */
 {
-  const re = /if \(!quoteOn\) \{\s*if \(noteItem !== null\) openMenu\(ev, \[noteItem\]\);\s*return;\s*\}/;
+  const re = /if \(!quoteOn\) \{\s*if \(fallbackItems\.length > 0\) openMenu\(ev, fallbackItems\);\s*return;\s*\}/;
   if (!re.test(src)) fail('when quote is off the selection path still returns early — 「存为笔记」would disappear with the quote switch');
   else ok('selection path keeps 「存为笔记」available when quote is off');
 }
