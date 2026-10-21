@@ -8,7 +8,7 @@ const reactMock = { memo: (c) => c, useState: (i) => [i, () => {}], useRef: (i) 
 const jsxRuntimeMock = { jsx: (...a) => a, jsxs: (...a) => a, Fragment: Symbol('F') };
 const primitivesMock = { Modal: function(){}, Button: function(){} };
 const mockRequire = (id) => id === 'react' ? reactMock : id === 'react/jsx-runtime' ? jsxRuntimeMock : id === '@deepseek-ai/dsh-client-ui-primitives' ? primitivesMock : (() => { throw new Error('unexpected require ' + id); })();
-const sandbox = { window: windowObj, require: mockRequire, TextEncoder, atob: (s) => Buffer.from(s, 'base64').toString('binary'), btoa, Symbol, Object, Promise, Date, Math, String, Array, Number, Error, JSON };
+const sandbox = { window: windowObj, require: mockRequire, TextEncoder, atob: (s) => Buffer.from(s, 'base64').toString('binary'), btoa, setTimeout, clearTimeout, Symbol, Object, Promise, Date, Math, String, Array, Number, Error, JSON };
 sandbox.globalThis = sandbox;
 vm.createContext(sandbox);
 vm.runInContext(code, sandbox, { filename: 'client.js' });
