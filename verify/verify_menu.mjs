@@ -48,7 +48,7 @@ const exportsObj = loaded.factory(mockRequire);
 // Mirrors the real translator: it substitutes {placeholders}. A mock that returns the raw
 // key hides exactly the interpolation bugs this plugin has had.
 const t = (k, params) => {
-  let value = ({ 'action.resend': '编辑重发', 'action.retry': '重试本轮', 'action.branch': '在此分支', 'menu.quoteSelection': '引用选中文字', 'quickAsk.action': '随手百科', 'menu.saveNote': '存为笔记', 'notes.savedFromSelection': '选中内容已存为笔记', 'notes.stored': '库存 {count} 条', 'notes.selectionEmpty': '没有选中任何内容', 'menu.newInWorkspace': '在此工作区新建引用对话', 'menu.jumpToQuote': '跳到引用出处', 'quote.jumpFailed': '那一轮不在已加载的窗口里', 'quote.selection': '↳ 引自在会话中选中的文字', 'quote.provenance': '↳ 引自本轮第 {turn} 轮', 'quote.clipped': '（引文过长已截断）', 'quote.empty': '没有可引用的内容', 'quote.insertFailed': '引用插入失败', 'quote.noComposer': '当前会话没有可写入的输入框' }[k] ?? k);
+  let value = ({ 'action.resend': '编辑重发', 'action.retry': '重试本轮', 'action.branch': '在此分支', 'menu.quoteSelection': '引用选中文字', 'menu.saveNote': '存为笔记', 'notes.savedFromSelection': '选中内容已存为笔记', 'notes.stored': '库存 {count} 条', 'notes.selectionEmpty': '没有选中任何内容', 'menu.newInWorkspace': '在此工作区新建引用对话', 'menu.jumpToQuote': '跳到引用出处', 'quote.jumpFailed': '那一轮不在已加载的窗口里', 'quote.selection': '↳ 引自在会话中选中的文字', 'quote.provenance': '↳ 引自本轮第 {turn} 轮', 'quote.clipped': '（引文过长已截断）', 'quote.empty': '没有可引用的内容', 'quote.insertFailed': '引用插入失败', 'quote.noComposer': '当前会话没有可写入的输入框' }[k] ?? k);
   if (params) for (const key of Object.keys(params)) value = value.split('{' + key + '}').join(String(params[key]));
   return value;
 };
@@ -129,7 +129,7 @@ requests.length = 0;
 sandbox.window.getSelection = () => ({ toString: () => '选中的文字' });
 win.getSelection = sandbox.window.getSelection;
 fireOn(userNode(1));
-if (body.children[0].children.length !== 5) fail('a selection must add quote + save-note + quick wiki, got ' + body.children[0].children.length);
+if (body.children[0].children.length !== 4) fail('a selection must add quote + save-note, got ' + body.children[0].children.length);
 body.children[0].children[2].onclick();
 if (requests[0].kind !== 'quote' || requests[0].turn !== 1) fail('quote request wrong: ' + JSON.stringify(requests[0]));
 console.log('quote on turn 1 ->', JSON.stringify(requests[0]));
