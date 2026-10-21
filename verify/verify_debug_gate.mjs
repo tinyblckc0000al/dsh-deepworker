@@ -121,8 +121,8 @@ console.log('① 源码级：默认关 + 每个调用点都在门后');
   const initCount = (plain.match(/var resendTraceOn = resendTraceEnabled\(\);/g) || []).length;
   eq(initCount, 2, 'resendTraceOn 必须恰好两处初始化（findPendingSpliceBefore / doResend），且都来自 resendTraceEnabled()');
   const useCount = (plain.match(/(?<![\w$])resendTraceOn(?![\w$])/g) || []).length;
-  eq(useCount, initCount + traceHits.length, 'resendTraceOn 的出现次数必须正好是「初始化 2 + 使用 5」，多一处就意味着有别的赋值');
-  if (initCount === 2 && useCount === 7) ok('resendTraceOn：2 处初始化（都读 resendTraceEnabled()）+ 5 处使用 = 7 次');
+  eq(useCount, initCount + traceHits.length + 2, 'resendTraceOn 的出现次数必须正好是「初始化 2 + 原有使用 5 + 进度提示 2」');
+  if (initCount === 2 && useCount === 9) ok('resendTraceOn：2 处初始化（都读 resendTraceEnabled()）+ 7 处使用 = 9 次');
 
   // 1e) 复选框存在，且与**设置键**绑定（不是随便一个键）。
   assert(code.includes('row("debugResendTrace", t("settings.debugResendTrace"))'),
