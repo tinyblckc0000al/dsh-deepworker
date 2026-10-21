@@ -305,7 +305,7 @@ console.log('\n④ 「不引入」= 不注册：真跑 apply 路径数贡献数�
     featureFocusLock: { slots: [{ name: 'conversation.session.header.utilities', id: 'history-actions-focus' }], commands: [], effects: ['dsh-deepworker: focus state file', 'dsh-deepworker: focus lock clicks'], armed: true },
     featureNotes: { slots: [{ name: 'sidebar.footer.action', id: 'history-actions-notes' }, { name: 'main' }], commands: ['deepworker.notes.open', 'deepworker.notes.search'], effects: [] },
     featureFind: { slots: [{ name: 'conversation.session.header.utilities', id: 'history-actions-find' }], commands: ['deepworker.find'], effects: ['dsh-deepworker: find highlights'] },
-    featureQuote: { slots: [], commands: [], effects: ['dsh-deepworker: context menu', 'dsh-deepworker: session-reference clicks'] },
+    featureQuote: { slots: [], commands: [], effects: ['dsh-deepworker: session-reference clicks'] },
     featureDigest: { slots: [{ name: 'conversation.session.header.utilities', id: 'history-actions-digest' }], commands: ['deepworker.digest'], effects: [] },
     featureTurnActions: { slots: [{ name: 'conversation.chat.turnTail', id: 'history-actions' }], commands: [], effects: [] },
     // 2026-10-16 新增：会话头部的终端按钮（一个槽位条目，内部一组按钮）。
