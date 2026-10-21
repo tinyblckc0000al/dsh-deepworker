@@ -691,7 +691,7 @@ const MUTATIONS = [
     // 换成另一档 ⇒ 总数仍是 14、基础页仍是 7 颗，只有"笔记页那一颗是什么"变了。
     apply: (s) => mustReplace(
       s,
-      '                    digestItem === null ? null : featureRow(digestItem),',
+      '                    digestItem === null ? null : featureRow(digestItem, { heading: true }),',
       '                    featureRow(featureItem("featureQuote")),',
       '笔记页的摘要开关行'),
     // ⚠️ 这条会先撞上更上游的"每一档的名字都必须在页面上"那条（摘要没了）—— 同一件事、
