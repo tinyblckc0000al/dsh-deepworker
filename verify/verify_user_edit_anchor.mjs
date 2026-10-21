@@ -21,8 +21,8 @@ need(/data-dw-user-edit/, 'native user-edit button marker exists');
 need(/querySelectorAll\('\[data-chat-turn="/, 'locates the turn container');
 need(/\[class\*="userRow"\]/, 'locates the user bubble row');
 need(/host\.appendChild\(button\)/, 'mounts the button inside the user row');
-need(/position:absolute/, 'positions it inside the reserved row space');
-need(/paddingBottom = "28px"/, 'reserves space so the button cannot overlap the next message');
+need(/insertBefore\(button, actions\)/, 'inserts the button before the official action row');
+need(/lastElementChild/, 'finds the official action row');
 need(/resendRef\.current\(\)/, 'click invokes the existing resend dialog');
 need(/action\.resend/, 'resend copy key remains');
 
