@@ -103,13 +103,9 @@ if (body.children.length !== 1) fail('menu not appended (children=' + body.child
 const menu = body.children[0];
 const labels = menu.children.map((b) => b.textContent);
 console.log('user-message menu ->', JSON.stringify(labels));
-// Four items, always — 「回退到此」 was deleted on 2026-10-17, so the list no longer depends
-// on the turn number. The exact labels are asserted, not just the length: a wrong label and
-// a missing item must not be able to hide behind each other.
-if (labels.length !== 4) fail('the user-message menu must offer 4 items, got ' + labels.length);
-if (labels[0] !== '编辑重发' || labels[1] !== '重试本轮' || labels[2] !== '在此分支' || labels[3] !== '引用选中文字') {
-  fail('menu labels wrong: ' + JSON.stringify(labels));
-}
+// No selection: edit/retry only. Branch is a turn action, not a user-message action.
+if (labels.length !== 2) fail('the user-message menu must offer 2 items without a selection, got ' + labels.length);
+if (labels[0] !== '编辑重发' || labels[1] !== '重试本轮') fail('menu labels wrong: ' + JSON.stringify(labels));
 
 // pick "编辑重发"
 menu.children[0].onclick();
@@ -119,26 +115,26 @@ const req = requests[0];
 if (req.sessionId !== 'sess-1' || req.turn !== 0 || req.kind !== 'edit') fail('request wrong: ' + JSON.stringify(req));
 if (!menu.removed) fail('menu was not closed after the pick');
 
-// ---- case 2: branch on turn 3 ----
-// Index 2 is 在此分支. It used to be 3, because a turn > 1 got an extra 「回退到此」 item;
-// that item is gone, so this ALSO asserts the item list no longer varies with the turn.
+// ---- case 2: no branch in the user-message menu ----
 body.children.length = 0;
 requests.length = 0;
 fireOn(userNode(3));
 const turnThreeLabels = body.children[0].children.map((b) => b.textContent);
 console.log('turn-3 menu ->', JSON.stringify(turnThreeLabels));
-if (turnThreeLabels.length !== 4) fail('a turn > 1 must offer the SAME 4 items, got ' + JSON.stringify(turnThreeLabels));
-body.children[0].children[2].onclick();
-if (requests[0].turn !== 3 || requests[0].kind !== 'branch') fail('branch request wrong: ' + JSON.stringify(requests[0]));
-console.log('branch on turn 3 ->', JSON.stringify(requests[0]));
+if (turnThreeLabels.length !== 2) fail('a turn > 1 without a selection must offer the SAME 2 items, got ' + JSON.stringify(turnThreeLabels));
 
-// ---- case 3: quoting the user's own message ----
+// ---- case 3: quoting the user's own message with a selection ----
 body.children.length = 0;
 requests.length = 0;
+sandbox.window.getSelection = () => ({ toString: () => '选中的文字' });
+win.getSelection = sandbox.window.getSelection;
 fireOn(userNode(1));
-body.children[0].children[3].onclick();   // turn 1 has 4 items: 引用选中文字 is the 4th
+if (body.children[0].children.length !== 4) fail('a selection must add quote + save-note, got ' + body.children[0].children.length);
+body.children[0].children[2].onclick();
 if (requests[0].kind !== 'quote' || requests[0].turn !== 1) fail('quote request wrong: ' + JSON.stringify(requests[0]));
 console.log('quote on turn 1 ->', JSON.stringify(requests[0]));
+sandbox.window.getSelection = () => ({ toString: () => '' });
+win.getSelection = sandbox.window.getSelection;
 
 // ---- case 4: an assistant node with a selection still quotes the selection ----
 body.children.length = 0;
@@ -284,9 +280,9 @@ quotedChip.parentElement = quotedRow;
 fireOn(quotedChip);
 const quotedLabels = body.children[0].children.map((b) => b.textContent);
 console.log('quoted-message menu ->', JSON.stringify(quotedLabels));
-if (quotedLabels.length !== 5) fail('expected a 5th (jump) item, got ' + quotedLabels.length);
-if (quotedLabels[4] !== '跳到引用出处') fail('jump item label wrong: ' + quotedLabels[4]);
-body.children[0].children[4].onclick();
+if (quotedLabels.length !== 3) fail('expected edit/retry/jump without a selection, got ' + quotedLabels.length);
+if (quotedLabels[2] !== '跳到引用出处') fail('jump item label wrong: ' + quotedLabels[2]);
+body.children[0].children[2].onclick();
 console.log('jump -> scrollIntoView calls =', scrolled);
 if (scrolled !== 1) fail('jump did not scroll the quoted turn into view');
 
@@ -300,7 +296,7 @@ plainRow.textContent = '普通消息';
 const plainChip = makeEl('span');
 plainChip.parentElement = plainRow;
 fireOn(plainChip);
-if (body.children[0].children.length !== 4) fail('unquoted message must not offer the jump');
+if (body.children[0].children.length !== 2) fail('unquoted message must not offer the jump');
 
 // ---- the ungrouped bucket (key "") offers nothing ----
 body.children.length = 0;
