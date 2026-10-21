@@ -72,7 +72,7 @@ function validatePromptRequest(req) {
   if (!Array.isArray(req.content)) errors.push('content must be array');
   else for (const part of req.content) {
     if (part.type === 'text') { if (typeof part.text !== 'string') errors.push('text part needs text:string'); }
-    else if (part.type === 'image') { if (typeof part.data !== 'string') errors.push('image part needs data'); }
+    else if (part.type === 'image') { if (part.attachment === undefined) errors.push('image part needs attachment'); }
     else if (part.type === 'file') { if (typeof part.receiptId !== 'string') errors.push('file part needs receiptId'); }
     else errors.push('unknown content type ' + JSON.stringify(part.type));
   }
@@ -105,6 +105,16 @@ if (resendErrors.length > 0) fail('resend payload violates wire schema: ' + rese
 if (resent.mode !== 'steer' || resent.sessionId !== 'child-session-2') fail('resend payload wrong: a resend must steer, not queue');
 if (resent.content[0].text !== '改过的内容') fail('resend text wrong');
 console.log('resend payload conforms (mode=' + resent.mode + ')');
+// resend must carry image/attachment blocks unchanged; an edit replaces only the text part
+calls.prompted.length = 0;
+const imagePart = { type: 'image', attachment: { id: 'img-1', mime: 'image/png' } };
+await props.resend(41, [{ type: 'text', text: '改过的内容' }, imagePart]);
+const withImage = calls.prompted[0];
+if (!withImage || !Array.isArray(withImage.content) || withImage.content.length !== 2) fail('image resend content shape wrong');
+if (withImage.content[0].type !== 'text' || withImage.content[0].text !== '改过的内容') fail('image resend lost edited text');
+if (withImage.content[1].type !== 'image' || withImage.content[1].attachment.id !== 'img-1') fail('image resend lost the image attachment');
+console.log('image resend keeps text + attachment');
+
 
 // failure path: preset select refusal must abort before prompt
 calls.selected.length = 0; calls.prompted.length = 0;
