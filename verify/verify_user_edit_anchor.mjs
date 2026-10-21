@@ -20,8 +20,9 @@ const need = (re, m) => { if (re.test(src)) ok(m); else bad(m); };
 need(/data-dw-user-edit/, 'native user-edit button marker exists');
 need(/querySelectorAll\('\[data-chat-turn="/, 'locates the turn container');
 need(/\[class\*="userRow"\]/, 'locates the user bubble row');
-need(/document\.body\.appendChild\(button\)/, 'mounts the button outside React-managed rows');
-need(/position:fixed/, 'positions it relative to the viewport');
+need(/host\.appendChild\(button\)/, 'mounts the button inside the user row');
+need(/position:absolute/, 'positions it inside the reserved row space');
+need(/paddingBottom = "28px"/, 'reserves space so the button cannot overlap the next message');
 need(/resendRef\.current\(\)/, 'click invokes the existing resend dialog');
 need(/action\.resend/, 'resend copy key remains');
 

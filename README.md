@@ -104,13 +104,13 @@ DSH 原生已经提供会话、分支（fork）、全局搜索、终端和 `@` �
 在 DSH 的 **设置 → 插件** 中从注册表安装：
 
 ```text
-dsh-deepworker@0.1.4
+dsh-deepworker@0.1.5
 ```
 
 或由 agent 调用 `plugin_manager`：
 
 ```text
-install_bundle  target = dsh-deepworker@0.1.4
+install_bundle  target = dsh-deepworker@0.1.5
 ```
 
 插件管理器会写入 profile 的 `dsh.profile.bundles`，并在安装前检查兼容范围。

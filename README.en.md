@@ -104,13 +104,13 @@ When you need to stay on one task, lock the current session or workspace; other 
 In DSH **Settings → Plugins**, install from the registry:
 
 ```text
-dsh-deepworker@0.1.4
+dsh-deepworker@0.1.5
 ```
 
 Or have the agent call `plugin_manager`:
 
 ```text
-install_bundle  target = dsh-deepworker@0.1.4
+install_bundle  target = dsh-deepworker@0.1.5
 ```
 
 The manager writes it into the profile's `dsh.profile.bundles` and checks the compatibility range.
