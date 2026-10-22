@@ -140,7 +140,7 @@ console.log('OK: the digest action sits in the session header');
 if (!exportsObj.inject.includes('shortcuts')) fail('the shortcuts service must be injected');
 const ids = calls.shortcuts.map((c) => c.id).sort();
 console.log('shortcut commands ->', JSON.stringify(calls.shortcuts));
-if (ids.join(',') !== 'deepworker.digest,deepworker.find,deepworker.notes.open,deepworker.notes.search') {
+if (ids.join(',') !== 'deepworker.digest,deepworker.find,deepworker.notes.open,deepworker.notes.search,deepworker.phrases.open') {
   fail('shortcut commands missing/extra: ' + JSON.stringify(ids));
 }
 // ⚠️ 2026-10-15: `web:linux` is gone on purpose — it was never a legal claim. DSH admits only
@@ -149,6 +149,7 @@ if (ids.join(',') !== 'deepworker.digest,deepworker.find,deepworker.notes.open,d
 // there made register() throw `Unsupported Web shortcut: deepworker.find`, and because
 // register is atomic the WHOLE command stayed unregistered (`find=failed` in Settings).
 const FIND_PLATFORMS = ['desktop:macos', 'desktop:windows', 'desktop:linux', 'web:macos', 'web:windows'];
+const PHRASE_PLATFORMS = ['desktop:macos', 'desktop:windows', 'desktop:linux', 'web:macos', 'web:windows'];
 for (const entry of calls.shortcuts) {
   // `defaults` must exist (the service indexes into it). Commands stay unbound by default
   // so they cannot collide with another plugin's binding — EXCEPT find, which ships a real
@@ -161,6 +162,13 @@ for (const entry of calls.shortcuts) {
     }
     if (entry.defaults.indexOf('web:linux') !== -1) {
       fail('find must NOT claim the illegal web:linux profile (DSH rejects KeyF+primary+alt there)');
+    }
+    continue;
+  }
+  if (entry.id === 'deepworker.phrases.open') {
+    const claimed = [...entry.defaults].sort().join(',');
+    if (claimed !== [...PHRASE_PLATFORMS].sort().join(',')) {
+      fail('phrases must claim exactly the platform bindings, got ' + JSON.stringify(entry.defaults));
     }
     continue;
   }

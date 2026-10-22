@@ -59,7 +59,7 @@ const pick = (list, key) => {
 };
 
 // ════════════════════════════════════════════════════════════════════════════════
-section('① 第 5 个 tab 的名字：zh = 命令按钮 / en = Commands');
+section('① 第 6 个 tab 的名字：zh = 命令按钮 / en = Commands');
 {
   const zhName = pick(zh, 'settings.tab.terminal');
   const enName = pick(en, 'settings.tab.terminal');
@@ -80,9 +80,9 @@ section('② tab 顺序与 value（改名不许顺手挪位置）');
   const src = code.slice(code.indexOf('var SETTINGS_TABS = ['), code.indexOf('];', code.indexOf('var SETTINGS_TABS = [')));
   const values = [...src.matchAll(/value:\s*"([^"]+)"/g)].map((m) => m[1]);
   const keys = [...src.matchAll(/labelKey:\s*"([^"]+)"/g)].map((m) => m[1]);
-  assert('5 个 tab 的 value 顺序 = basic / focus / notes / actions / terminal',
-    values.join('|') === 'basic|focus|notes|actions|terminal', JSON.stringify(values));
-  assert('5 个 tab 的 labelKey 与 value 一一对应',
+  assert('6 个 tab 的 value 顺序 = basic / focus / notes / quickwiki / actions / terminal',
+    values.join('|') === 'basic|focus|notes|quickwiki|actions|terminal', JSON.stringify(values));
+  assert('6 个 tab 的 labelKey 与 value 一一对应',
     keys.join('|') === values.map((v) => 'settings.tab.' + v).join('|'), JSON.stringify(keys));
   // labelKey 必须是**字面量**（拼接会让 verify_hygiene 看不见引用 ⇒ 误报 unused）。
   // ⚠️ 只扫代码、不扫注释：SETTINGS_TABS 的文档注释里**就是**用那串拼接举例的。
@@ -112,7 +112,7 @@ section('③ 改名不许过度：页内标题跟 tab 同名，**功能名**（�
 }
 
 // ════════════════════════════════════════════════════════════════════════════════
-section('④ 真跑 SSR：tab 条上渲染出来的第 5 个按钮文字就是「命令按钮」');
+section('④ 真跑 SSR：tab 条上渲染出来的第 6 个按钮文字就是「命令按钮」');
 {
   const require_ = createRequire(import.meta.url);
   const React = require_('react');
@@ -182,12 +182,12 @@ section('④ 真跑 SSR：tab 条上渲染出来的第 5 个按钮文字就是�
   catch (e) { fail++; console.error('  FAIL SSR 渲染抛错 — ' + String((e && e.stack) || e)); }
   if (html !== '') {
     const tabs = [...html.matchAll(/<button([^>]*role="tab"[^>]*)>([^<]*)<\/button>/g)];
-    assert('SSR 渲染出 5 个 tab', tabs.length === 5, String(tabs.length));
+    assert('SSR 渲染出 6 个 tab', tabs.length === 6, String(tabs.length));
     const names = tabs.map((m) => m[2].trim());
-    assert('渲染出来的 tab 名 = 基础 / 专注锁 / 笔记 / 会话操作 / 命令按钮',
-      names.join('|') === '基础|专注锁|笔记|会话操作|命令按钮', names.join(' / '));
-    assert('第 5 个 tab 的 id 仍是 deepworker-settings-tabs-terminal（value 未改）',
-      tabs.length === 5 && /id="deepworker-settings-tabs-terminal"/.test(tabs[4][1]), tabs.length === 5 ? tabs[4][1].slice(0, 120) : '(no 5th tab)');
+    assert('渲染出来的 tab 名 = 基础 / 专注锁 / 笔记 / 随手百科 / 会话操作 / 命令按钮',
+      names.join('|') === '基础|专注锁|笔记|随手百科|会话操作|命令按钮', names.join(' / '));
+    assert('第 6 个 tab 的 id 仍是 deepworker-settings-tabs-terminal（value 未改）',
+      tabs.length === 6 && /id="deepworker-settings-tabs-terminal"/.test(tabs[5][1]), tabs.length === 6 ? tabs[5][1].slice(0, 120) : '(no 6th tab)');
     assert('页面上**没有**任何 tab 按钮叫「终端」',
       !names.includes('终端'), names.join(' / '));
   }

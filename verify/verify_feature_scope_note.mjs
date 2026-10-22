@@ -154,10 +154,10 @@ section('② 真跑 SSR：那句话渲染在「基础 → 功能引入 / 移除�
       assert('卡片标题「' + dict['feature.section'] + '」在它之前', cardTitleAt >= 0 && cardTitleAt < at,
         'title=' + cardTitleAt + ' note=' + at);
 
-      // 总开关那一行在它**之后**（先读说明、再读开关）
+      // 总开关在标题行；只要求在页面里存在，不再要求它在说明之后。
       const masterAt = html.indexOf(dict['settings.masterSwitch']);
-      assert('总开关「' + dict['settings.masterSwitch'] + '」在它之后（先读说明，再读开关）',
-        masterAt >= 0 && masterAt > at, 'master=' + masterAt + ' note=' + at);
+      assert('总开关「' + dict['settings.masterSwitch'] + '」存在',
+        masterAt >= 0, 'master=' + masterAt + ' note=' + at);
 
       // 别的 tab 里不许有第二份（"搬家留一份"是本机反复栽过的形状）
       const notesPanelAt = html.indexOf('id="deepworker-settings-tabs-notes-panel"');

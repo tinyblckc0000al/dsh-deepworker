@@ -88,7 +88,7 @@ mutation({
 mutation({
   name: '⑤ 选区路径不再创建 noteItem（只剩消息行一条路）⇒ 红',
   mutate: (s) => mustReplace(s,
-    '        var noteItem = notesOn ? makeItem(t("menu.saveNote"), function () { saveSelectionNote(selected, ev); }) : null;\n',
+    '        var noteItem = notesOn ? makeItem(t("menu.saveNote"), function () { saveSelectionNote(selected, ev, sessionId, turn); }) : null;\n',
     '        var noteItem = null;\n',
     'selection noteItem'),
   expect: /the note item is wired in both menu paths|saveSelectionNote is defined and called from both paths/,

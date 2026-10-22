@@ -70,8 +70,8 @@ const MUTATIONS = [
     //   ② 目标键必须是**非布尔判定**那一支（`debugResendTrace` 走 `=== true`）。功能开关
     //      走的是 `!== false`，测试用 `retryNote: true` 去反证它根本不会变红。
     apply: (s) => s.replace(
-      ': (key === "focusNativeNotice" ? state[0][key] !== false : state[0][key] === true);',
-      ': (key === "focusNativeNotice" ? state[0][key] !== false : state[0]["retryNote"] === true);')
+      'var isOn = defaultOn ? state[0][key] !== false : state[0][key] === true;',
+      'var isOn = state[0]["retryNote"] === true;')
   },
   {
     name: '⑥ 门变量被写成常量 true（开关不再接线：resendTraceOn 恒真）',

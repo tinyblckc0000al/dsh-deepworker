@@ -211,7 +211,7 @@ if (calls.prompted.length !== 0) fail('prompted despite refusal');
   if (!/error\.timeout/.test(source)) fail('the timeout must have its own message');
 
   // the other three silent paths must report
-  const archiveBranch = source.match(/archiveSession\(sessionId\)[\s\S]{0,400}?\}\);/);
+  const archiveBranch = source.match(/archiveSession\(sessionId(?:, \{ stopActivity: true \})?\)[\s\S]{0,400}?\}\);/);
   if (!archiveBranch || !/showNotice/.test(archiveBranch[0])) fail('a failed archive must be reported');
   const stopFn = source.match(/function stopRunningTurn\(\)[\s\S]*?\n      \}/);
   if (!stopFn || !/resend\.cancelUnavailable/.test(stopFn[0])) fail('a missing cancel seam must be reported');

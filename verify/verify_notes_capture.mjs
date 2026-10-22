@@ -77,7 +77,7 @@ mustAtLeast(/makeItem\(t\("menu\.saveNote"\)/g, 2, 'the note item is wired in bo
 mustAtLeast(/saveSelectionNote\(/g, 3, 'saveSelectionNote is defined and called from both paths');
 
 {
-  const fn = block('function saveSelectionNote(text, ev) {', 'function onContextMenu(ev) {');
+  const fn = block('function saveSelectionNote(text, ev, sourceSessionId, sourceTurn) {', 'function onContextMenu(ev) {');
   if (fn === null) fail('saveSelectionNote body could not be located');
   else {
     if (!/var value = String\(text == null \? "" : text\)\.trim\(\);/.test(fn)) fail('saveSelectionNote does not trim/normalize the selection');

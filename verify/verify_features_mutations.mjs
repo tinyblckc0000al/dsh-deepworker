@@ -278,11 +278,11 @@ const MUTATIONS = [
   {
     name: '⑫ 开关的 checked 表达式改读别的键（row(...) 调用点一字不动）',
     suite: RENDER,
-    maxChange: 64,
+    maxChange: 120,
     apply: (s) => mustReplaceRe(
       s,
-      /: \(key === "focusNativeNotice" \? state\[0\]\[key\] !== false : state\[0\]\[key\] === true\);/,
-      ': (key === "focusNativeNotice" ? state[0][key] !== false : state[0]["retryNote"] === true);',
+      /var isOn = defaultOn \? state\[0\]\[key\] !== false : state\[0\]\[key\] === true;/,
+      'var isOn = state[0]["retryNote"] === true;',
       'row() 的 checked 表达式'),
     expect: /flipping exactly two settings|checked|勾选/
   },
@@ -293,7 +293,7 @@ const MUTATIONS = [
     maxChange: 200,
     apply: (s) => mustReplaceRe(
       s,
-      /color: offNow\.length === 0 \? "var\(--dsw-alias-label-tertiary\)" : "var\(--dsw-alias-state-error-primary\)",/,
+      /color: offNow\.length === 0 \? "var\(--dsw-alias-label-tertiary\)" : "var\(--dsw-alias-state-error-primary\)"/,
       'color: "var(--dsw-alias-state-error-primary)",',
       '全部已引入那行徽章的三元'),
     expect: /all-on badge must not be red/
@@ -304,7 +304,7 @@ const MUTATIONS = [
     maxChange: 200,
     apply: (s) => mustReplaceRe(
       s,
-      /color: offNow\.length === 0 \? "var\(--dsw-alias-label-tertiary\)" : "var\(--dsw-alias-state-error-primary\)",/,
+      /color: offNow\.length === 0 \? "var\(--dsw-alias-label-tertiary\)" : "var\(--dsw-alias-state-error-primary\)"/,
       'color: "var(--dsw-alias-label-tertiary)",',
       '全部已引入那行徽章的三元'),
     expect: /with a feature actually off the badge MUST be red/
@@ -416,7 +416,7 @@ const MUTATIONS = [
     apply: (s) => {
       // 先在轮次操作小节里把这一行连行尾一起摘掉，再插到「引用」小节里 quoteProvenance
       // 那一行之后 —— 正是用户截图里看到的形状（挂在「引用」小标题底下）。
-      const row = 'row("archiveOriginal", t("settings.archiveOriginal"))';
+      const row = 'row("archiveOriginal", t("settings.archiveOriginal"), t("settings.archiveOriginalHint"))';
       const at = s.indexOf(row);
       if (at < 0) throw new Error('archive-row anchor missing');
       if (s.indexOf(row, at + 1) !== -1) throw new Error('archive-row anchor is ambiguous');
@@ -435,7 +435,7 @@ const MUTATIONS = [
   {
     name: '⑳ 「引用回复」整节搬回「笔记」tab（第 1 处错位被回滚）',
     suite: RENDER,
-    maxChange: 4200,
+    maxChange: 6000,
     apply: (s) => {
       // 整块 `featureSection("featureQuote", …)` 从会话操作面板搬回笔记面板 —— 正是
       // 用户截图里"引用回复住在会话内容里"的形状。
@@ -479,7 +479,7 @@ const MUTATIONS = [
       const comma = s.lastIndexOf(',\n', at);
       if (comma < 0) throw new Error('storage-section anchor missing: the separator before it');
       const out = s.slice(0, comma) + s.slice(at + block.length);
-      const host = '                // ④ 调试（默认收起）\n';
+      const host = '                // ⑤ 调试（默认收起）\n';
       const hostAt = out.indexOf(host);
       if (hostAt < 0) throw new Error('basic-panel insertion anchor missing');
       return out.slice(0, hostAt) + block + ',\n' + out.slice(hostAt);
@@ -611,32 +611,6 @@ const MUTATIONS = [
     expect: /must have released the WORKSPACE-granularity lock too/
   },
   {
-    // ⚠️ 这条是**整块搬家**：把总开关那一行（含它的「需重载」提示）从卡片顶部搬到 7 档之后。
-    //    diffSpan 的跨度 = 2 ×（摘除点与插入点之间的距离）量级，所以 maxChange 按实测定
-    //    （与 ⑲⑳㉑ 同一族）。2026-10-17 实测 3281（行清单加了 SWITCH_HOME 过滤、那一行
-    //    的提示从按钮换成文字，跨度略长）⇒ 预算放到 3600。它挡的是"定位器跑偏、切掉半个文件"。
-    name: '㉜ 「全部功能」总开关从卡片顶部搬走（挪到 7 档之后）',
-    suite: RENDER,
-    maxChange: 3600,
-    apply: (s) => {
-      const rowMark = '                    row("__all__", t("settings.masterSwitch"), function () {';
-      const at = s.indexOf(rowMark);
-      if (at < 0) throw new Error('anchor missing: the master row');
-      if (s.indexOf(rowMark, at + 1) !== -1) throw new Error('anchor ambiguous: more than one master row');
-      const endMark = '                    // 「全部功能都已引入」是**配置读数**、不是系统健康状况 ⇒ 中性灰（label-tertiary）。';
-      const end = s.indexOf(endMark, at);
-      if (end < 0) throw new Error('anchor missing: the master inline reload');
-      const block = s.slice(at, end + endMark.length);
-      let out = s.slice(0, at) + s.slice(end + endMark.length);
-      const listMark = '(0, react_jsx_runtime.jsx)("div", { children: FEATURES.filter(function (f) { return SWITCH_HOME[f.key] === undefined; }).map(function (f) { return featureRow(f); }) })';
-      const listAt = out.indexOf(listMark);
-      if (listAt < 0) throw new Error('anchor missing: the FEATURES.map row list');
-      const insertAt = listAt + listMark.length;
-      return out.slice(0, insertAt) + ',\n' + block.replace(/\s+$/, '') + out.slice(insertAt);
-    },
-    expect: /must sit at the TOP of the 功能引入\/移除 card/
-  },
-  {
     name: '㉞ 按钮③「清除范围设置」的回执丢掉 always:true（通知关掉后它又变哑巴）',
     suite: FEATURES,
     maxChange: 64,
@@ -699,7 +673,7 @@ const MUTATIONS = [
     expect: /must name 摘要/
   },
   {
-    name: '㊵ 第 5 个 tab（终端）被删（只剩 4 个 tab）',
+    name: '㊵ 第 6 个 tab（终端）被删（只剩 5 个 tab）',
     suite: RENDER,
     maxChange: 300,
     apply: (s) => mustReplace(
@@ -709,8 +683,8 @@ const MUTATIONS = [
         '        // 顺序在「会话操作」之后；value = `terminal`，面板 id / aria-controls 由同一个 value 拼。\n' +
         '        { value: "terminal", labelKey: "settings.tab.terminal" }',
       '        { value: "actions", labelKey: "settings.tab.actions" }',
-      'SETTINGS_TABS 的第 5 项'),
-    expect: /must render exactly 5 tabs/
+      'SETTINGS_TABS 的第 6 项'),
+    expect: /must render exactly 6 tabs/
   },
   {
     name: '㊶ tab 顺序被改（终端挪到「会话操作」之前）',

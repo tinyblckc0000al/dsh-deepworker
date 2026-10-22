@@ -1,7 +1,7 @@
 {
   "name": "dsh-deepworker",
   "description": "DeepWorker —— 把 DSH 会话变成可操作、可留存、可锁定的工作台：轮次操作、引用出处、笔记、摘要、查找、专注锁、多工作区命令按钮。",
-  "version": "0.1.5",
+  "version": "0.1.6",
   "type": "module",
   "engines": {
     "dsh": ">=0.2.1-rc.1 <0.3.0"
@@ -46,7 +46,8 @@
     "README.md",
     "README.en.md",
     "CHANGELOG.md",
-    "docs/command-buttons-config.md"
+    "docs/command-buttons-config.md",
+    "docs/release-0.1.6.md"
   ],
   "license": "MIT",
   "author": "pandamustard",

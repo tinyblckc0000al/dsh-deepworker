@@ -25,7 +25,7 @@ const code = fs.readFileSync(clientPath, 'utf8');
 const FEATURE_KEY_LIST = ((code.match(/var FEATURE_KEYS = \[([^\]]*)\]/) || [, ''])[1].match(/"[^"]+"/g) || []).map((x) => x.slice(1, -1));
 const FEATURE_COUNT = FEATURE_KEY_LIST.length;
 if (FEATURE_COUNT < 1) throw new Error('verify_render could not read FEATURE_KEYS out of the bundle');
-const EXPECTED_SWITCHES = 5 + 1 + FEATURE_COUNT + 1;
+const EXPECTED_SWITCHES = 5 + 1 + FEATURE_COUNT + 1 + 1 + 2;
 let loaded = null;
 const windowObj = { __ModuleLoader__: { load: (r) => { loaded = r; } } };
 const primitivesStub = {
@@ -217,7 +217,7 @@ const dict = { 'focus.title': '专注锁', 'focus.report': '把自检发给我',
   //    `notes`（承载 笔记 · 摘要 · 存储位置），对应的 i18n 键也由 settings.tab.content
   //    改成 settings.tab.notes。旧键已从 zh / en 两个词典里一起删掉。
   'settings.tab.basic': '基础', 'settings.tab.focus': '专注锁',
-  'settings.tab.notes': '笔记', 'settings.tab.actions': '会话操作',
+  'settings.tab.notes': '笔记', 'settings.tab.quickwiki': '随手百科', 'settings.tab.actions': '会话操作',
   // 2026-10-17：终端按钮有了自己的 tab（用户原话"启动按钮没有单独的tab页吗"）。
   // 2026-10-17（第 1 段改名）：tab 名由「终端」改成「命令按钮」（en: Terminal → Commands）——
   //   这一页讲的是"头部那组命令按钮 + 每个工作区各自配的命令"；叫「终端」会让人以为它是
@@ -247,12 +247,22 @@ const dict = { 'focus.title': '专注锁', 'focus.report': '把自检发给我',
   //    现读。原因见那段注释（手抄副本会漂，漂了之后"前缀重复"这条断言就再也红不了）。
   'feature.nameFocusLock': '专注锁', 'feature.nameNotice': '通知与气泡', 'feature.nameFind': '会话内查找',
   'feature.nameQuote': '引用', 'feature.nameDigest': '摘要', 'feature.nameNotes': '笔记', 'feature.nameTurnActions': '轮次操作',
+  'feature.nameQuickWiki': '随手百科', 'feature.descQuickWiki': '选中文字右键查术语',
+  'feature.namePhrases': '快捷短语', 'feature.descPhrases': '输入框右侧短语下拉与快捷键',
+  'feature.nameDiffLinks': '轮末改动', 'feature.descDiffLinks': '轮末列出改过的文件并打开原生 diff',
+  'feature.nameLineage': '分支血缘', 'feature.descLineage': '子会话显示来自第 N 轮',
+  'feature.nameWorkspace': '工作区状态', 'feature.descWorkspace': '头部显示未提交数量',
   // 2026-10-16 新增第 8 档：名字必须在夹具里有**真实中文**，否则下面的灰字提示断言会
   // 以 "未引入：undefined" 假红（而且看不出原因）。
   // 2026-10-17：`FEATURE_META.featureTerminal.name` 指向的是 `term.featureName`（不是
   // `feature.nameTerminal`）。两个键都必须在这里有真实中文 —— 前者被开关行用，后者是早期
   // 命名留下的（保留它不会假红，但缺了前者会让开关变成无名控件）。
   'term.featureName': '终端按钮', 'term.featureDesc': '会话头部的启动 / 停止按钮：新开终端跑你配的命令。',
+  'feature.hintQuickWikiOff': '右键菜单里的「随手百科」消失',
+  'feature.hintPhrasesOff': '短语下拉和快捷键不注册',
+  'feature.hintDiffLinksOff': '轮末不再列出改动文件',
+  'feature.hintLineageOff': '分支不再显示血缘',
+  'feature.hintWorkspaceOff': '头部不再显示未提交数量',
   // 「终端编辑器在哪一页」的判据只认这一句 —— 它只出现在 TerminalButtonSettings 里，
   // 且在整页唯一（`term.settingsTitle`/`term.featureName` 都是"终端按钮"，会撞名）。
   'term.timeoutLabel': '判定「仍在运行」前等多少秒',
@@ -878,7 +888,7 @@ if (!editHtml.includes('编辑并重新发送')) { console.error('FAIL: edit dia
       process.exit(1);
     }
     if (switches.length !== EXPECTED_SWITCHES) {
-      console.error('FAIL: expected exactly ' + EXPECTED_SWITCHES + ' Switch rows (5 behaviour + 1 all-features master + ' + FEATURE_COUNT + ' feature masters + the debug resend-trace switch), got ' + switches.length);
+      console.error('FAIL: expected exactly ' + EXPECTED_SWITCHES + ' Switch rows (5 behaviour + 1 all-features master + ' + FEATURE_COUNT + ' feature masters + the debug resend-trace switch + the command-toast switch), got ' + switches.length);
       process.exit(1);
     }
     for (const tag of switches) {
@@ -900,11 +910,11 @@ if (!editHtml.includes('编辑并重新发送')) { console.error('FAIL: edit dia
   //    ④ 面板用 `hidden` **保活**：5 个面板永远都在 DOM 里，只有 default 那个不带 hidden。
   {
     const tabs = [...settingsHtml.matchAll(/<button([^>]*role="tab"[^>]*)>([^<]*)<\/button>/g)];
-    if (tabs.length !== 5) {
-      console.error('FAIL: the settings page must render exactly 5 tabs (基础 / 专注锁 / 笔记 / 会话操作 / 命令按钮), got ' + tabs.length + ': ' + settingsHtml.slice(0, 300));
+    if (tabs.length !== 6) {
+      console.error('FAIL: the settings page must render exactly 6 tabs (基础 / 专注锁 / 笔记 / 随手百科 / 会话操作 / 命令按钮), got ' + tabs.length + ': ' + settingsHtml.slice(0, 300));
       process.exit(1);
     }
-    const wantNames = ['基础', '专注锁', '笔记', '会话操作', '命令按钮'];
+    const wantNames = ['基础', '专注锁', '笔记', '随手百科', '会话操作', '命令按钮'];
     const gotNames = tabs.map((m) => m[2].trim());
     if (gotNames.join('|') !== wantNames.join('|')) {
       console.error('FAIL: the tab names / order must be exactly ' + wantNames.join(' / ') + ', got ' + gotNames.join(' / '));
@@ -914,7 +924,7 @@ if (!editHtml.includes('编辑并重新发送')) { console.error('FAIL: edit dia
     //    三处共用同一个 value。旧值 `content` 若残留（哪怕只在一处），下面那条
     //    `aria-controls === id + '-panel'` 仍会绿（两侧都旧）—— 所以额外钉死新值。
     //    2026-10-17 新增第 5 个 value `terminal`，同样钉死（顺序也钉：它必须在 actions 之后）。
-    const wantValues = ['basic', 'focus', 'notes', 'actions', 'terminal'];
+    const wantValues = ['basic', 'focus', 'notes', 'quickwiki', 'actions', 'terminal'];
     for (let i = 0; i < tabs.length; i++) {
       if (!new RegExp('id="deepworker-settings-tabs-' + wantValues[i] + '"').test(tabs[i][1])) {
         console.error('FAIL: tab ' + i + ' (' + gotNames[i] + ') must carry the value ' + JSON.stringify(wantValues[i]) + ': ' + tabs[i][0]);
@@ -949,8 +959,8 @@ if (!editHtml.includes('编辑并重新发送')) { console.error('FAIL: edit dia
       }
       if (hidden) hiddenCount++;
     }
-    if (hiddenCount !== 4) { console.error('FAIL: exactly 4 of the 5 panels must be hidden (the default tab 基础 is the visible one), got ' + hiddenCount); process.exit(1); }
-    console.log('settings tabs -> 5 tabs 基础/专注锁/笔记/会话操作/命令按钮 (values basic/focus/notes/actions/terminal); every aria-controls matches `${id}-${value}-panel`, every panel is role="tabpanel" + aria-labelledby, 4 of 5 hidden (keep-alive)');
+    if (hiddenCount !== 5) { console.error('FAIL: exactly 5 of the 6 panels must be hidden (the default tab 基础 is the visible one), got ' + hiddenCount); process.exit(1); }
+    console.log('settings tabs -> 6 tabs 基础/专注锁/笔记/随手百科/会话操作/命令按钮 (values basic/focus/notes/quickwiki/actions/terminal); every aria-controls matches `${id}-${value}-panel`, every panel is role="tabpanel" + aria-labelledby, 5 of 6 hidden (keep-alive)');
   }
   // ── 「基础」的排版：功能引入/移除是**视觉主体**（7 档全在它里面），通知 / 折叠调试在它下面。
   //    ⚠️ 2026-10-16 二次分组：「存储位置」**搬走了**（基础 → 笔记），所以这一页只剩三块。
@@ -965,8 +975,8 @@ if (!editHtml.includes('编辑并重新发送')) { console.error('FAIL: edit dia
       console.error('FAIL: 基础 must also carry 通知 + the collapsed 调试 block; notice=' + noticeAt + ' debug=' + debugAt);
       process.exit(1);
     }
-    if (!(bodyAt < noticeAt && noticeAt < debugAt)) {
-      console.error('FAIL: the 基础 order must be 功能引入/移除 -> 通知 -> 调试; body=' + bodyAt + ' notice=' + noticeAt + ' debug=' + debugAt);
+    if (!(noticeAt < bodyAt && bodyAt < debugAt)) {
+      console.error('FAIL: the 基础 order must be 通知范围 -> 功能引入/移除 -> 调试; notice=' + noticeAt + ' body=' + bodyAt + ' debug=' + debugAt);
       process.exit(1);
     }
     const basicPanelStart = settingsHtml.indexOf('id="deepworker-settings-tabs-basic-panel"');
@@ -1098,14 +1108,14 @@ if (!editHtml.includes('编辑并重新发送')) { console.error('FAIL: edit dia
     const panels = [...code.matchAll(/settingsPanel\("([a-z]+)",/g)]
       .filter((m) => !isLineComment(m.index))
       .map((m) => ({ value: m[1], at: m.index }));
-    if (panels.length !== 5) {
-      console.error('FAIL: expected exactly 5 settingsPanel(value, …) calls, got ' + panels.length + ': ' + JSON.stringify(panels.map((p) => p.value)));
+    if (panels.length !== 6) {
+      console.error('FAIL: expected exactly 6 settingsPanel(value, …) calls, got ' + panels.length + ': ' + JSON.stringify(panels.map((p) => p.value)));
       process.exit(1);
     }
     // 面板的 **value 与顺序**也要钉住（只断个数的话，把 terminal 面板插到 basic 前也绿）。
-    const wantPanelValues = ['basic', 'focus', 'notes', 'actions', 'terminal'];
+    const wantPanelValues = ['basic', 'focus', 'notes', 'quickwiki', 'actions', 'terminal'];
     if (panels.map((p) => p.value).join('|') !== wantPanelValues.join('|')) {
-      console.error('FAIL: the five settingsPanel values must be ' + wantPanelValues.join(' / ') + ' in that order (the tab order), got ' + panels.map((p) => p.value).join(' / '));
+      console.error('FAIL: the six settingsPanel values must be ' + wantPanelValues.join(' / ') + ' in that order (the tab order), got ' + panels.map((p) => p.value).join(' / '));
       process.exit(1);
     }
     const placed = {};
@@ -1245,7 +1255,7 @@ if (!editHtml.includes('编辑并重新发送')) { console.error('FAIL: edit dia
   //    （上一条 switch 断言已经断过 13 + 0 裸 checkbox，这里重复一次是为了让"改版把开关
   //    丢掉一个"的报错落在同一个显眼位置。）
   // 同一条算式，但从实现现算档数（见上面 EXPECTED_SWITCHES 的注释）。
-  if ((settingsHtml.match(/role="switch"/g) || []).length !== EXPECTED_SWITCHES) { console.error('FAIL: expected exactly ' + EXPECTED_SWITCHES + ' switches (4 behaviour + 1 all-features master + ' + FEATURE_COUNT + ' feature masters + the debug resend-trace switch), got ' + (settingsHtml.match(/role="switch"/g) || []).length, settingsHtml.slice(0, 400)); process.exit(1); }
+  if ((settingsHtml.match(/role="switch"/g) || []).length !== EXPECTED_SWITCHES) { console.error('FAIL: expected exactly ' + EXPECTED_SWITCHES + ' switches (5 behaviour + 1 all-features master + ' + FEATURE_COUNT + ' feature masters + the debug resend-trace switch + the command-toast switch), got ' + (settingsHtml.match(/role="switch"/g) || []).length, settingsHtml.slice(0, 400)); process.exit(1); }
   // ── 功能引入/移除：7 档全在，默认全部**已引入**，汇总读数说"全部功能都已引入"。 ──
   {
     const want = ['专注锁', '通知与气泡', '会话内查找', '引用', '摘要', '笔记', '轮次操作'];
@@ -1718,7 +1728,7 @@ if (!editHtml.includes('编辑并重新发送')) { console.error('FAIL: edit dia
     console.error('FAIL: the status line must show short names, not package-prefixed command ids: ' + statusLine.slice(0, 400));
     process.exit(1);
   }
-  console.log('settings section renders OK (5 tabs 基础/专注锁/笔记/会话操作/命令按钮 + 13 Switch rows + build tag in the 基础 top bar)');
+  console.log('settings section renders OK (6 tabs 基础/专注锁/笔记/随手百科/会话操作/命令按钮 + 23 Switch rows + build tag in the 基础 top bar)');
 }
 {
   // the header action must look like its neighbours: borderless, icon + short label

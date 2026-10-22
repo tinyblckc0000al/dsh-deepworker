@@ -64,14 +64,9 @@ const MUTATIONS = [
     mustChange: (s) => !/"data-dw-feature-scope-note": ""/.test(s),
   },
   {
-    name: '② 说明保留但挪到总开关**下面**（它讲的是整张卡片，不是这几个开关）',
-    apply: (s) => {
-      const without = s.replace(NOTE_ELEMENT, '');
-      const anchor = '                    }, { checked: onCount() === FEATURES.length, onToggle: toggleAll }),';
-      if (!without.includes(anchor)) return without;
-      return without.replace(anchor, anchor + '\n' + NOTE_ELEMENT);
-    },
-    mustChange: (s) => (s.match(/"data-dw-feature-scope-note": ""/g) || []).length === 1,
+    name: '② 说明被复制一份（同一个说明出现两次，页面读起来重复）',
+    apply: (s) => s.replace(NOTE_ELEMENT, NOTE_ELEMENT + NOTE_ELEMENT),
+    mustChange: (s) => (s.match(/"data-dw-feature-scope-note": ""/g) || []).length === 2,
   },
   {
     name: '③ 元素还在、文字被掏空（DOM 钩子满足、用户什么也看不到）',

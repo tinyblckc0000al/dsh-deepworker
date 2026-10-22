@@ -308,6 +308,12 @@ console.log('\n④ 「不引入」= 不注册：真跑 apply 路径数贡献数�
     featureQuote: { slots: [], commands: [], effects: ['dsh-deepworker: session-reference clicks'] },
     featureDigest: { slots: [{ name: 'conversation.session.header.utilities', id: 'history-actions-digest' }], commands: ['deepworker.digest'], effects: [] },
     featureTurnActions: { slots: [{ name: 'conversation.chat.turnTail', id: 'history-actions' }], commands: [], effects: [] },
+    // 2026-10-22 新增：随手百科 / 轮末改动不注册独立条目（前者门控右键菜单，后者门控轮末渲染）
+    featureQuickWiki: null,
+    featurePhrases: { slots: [{ name: 'conversation.input.right', id: 'history-actions-phrases' }], commands: ['deepworker.phrases.open'], effects: [] },
+    featureDiffLinks: null,
+    featureLineage: { slots: [{ name: 'conversation.session.header.utilities', id: 'history-actions-lineage' }], commands: [], effects: [] },
+    featureWorkspace: { slots: [{ name: 'sidebar.right.tab.files.actions', id: 'history-actions-workspace-open' }], commands: [], effects: [] },
     // 2026-10-16 新增：会话头部的终端按钮（一个槽位条目，内部一组按钮）。
     featureTerminal: { slots: [{ name: 'conversation.session.header.utilities', id: 'history-actions-terminal' }], commands: [], effects: [] },
     featureNotice: null
@@ -359,7 +365,7 @@ console.log('\n④ 「不引入」= 不注册：真跑 apply 路径数贡献数�
   }
   console.log('     注册数实测（关/开）: ' + readout.join(' · '));
   // 全开 ⇒ 五条命令都在（否则"关=0"可能只是因为命令本来就坏）。
-  for (const id of ['deepworker.notes.open', 'deepworker.find', 'deepworker.digest', 'deepworker.notes.search']) {
+  for (const id of ['deepworker.notes.open', 'deepworker.find', 'deepworker.digest', 'deepworker.notes.search', 'deepworker.phrases.open']) {
     if (!allOn.registered.some((c) => c.id === id)) fail('with every feature introduced the command must be registered: ' + id);
   }
   ok('with every feature introduced all 4 commands are registered');
